@@ -117,6 +117,12 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
  */
 createReviewHTML = (review) => {
   const li = document.createElement('li');
+  
+  const starWrapper = document.createElement('div');
+  starWrapper.classList.add('star');
+  starWrapper.innerHTML = "&#9733;";
+  li.appendChild(starWrapper);
+  
   const name = document.createElement('p');
   name.innerHTML = review.name;
   li.appendChild(name);
