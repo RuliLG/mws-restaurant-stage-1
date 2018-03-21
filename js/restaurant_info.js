@@ -123,16 +123,20 @@ createReviewHTML = (review) => {
   starWrapper.innerHTML = "&#9733;";
   li.appendChild(starWrapper);
   
+  const nameAndDateContainer = document.createElement('div');
+  nameAndDateContainer.classList.add('name-date-container');
+  li.appendChild(nameAndDateContainer);
+  
   const name = document.createElement('p');
-  name.innerHTML = review.name;
-  li.appendChild(name);
+  name.innerHTML = `&#128113; ${review.name}`;
+  nameAndDateContainer.appendChild(name);
 
   const date = document.createElement('p');
-  date.innerHTML = review.date;
-  li.appendChild(date);
+  date.innerHTML = `&#128467; ${review.date}`;
+  nameAndDateContainer.appendChild(date);
 
   const rating = document.createElement('p');
-  rating.innerHTML = `Rating: ${review.rating}`;
+  rating.innerHTML = `Rating: ${getReviewStars(review.rating)}`;
   li.appendChild(rating);
 
   const comments = document.createElement('p');
@@ -140,6 +144,19 @@ createReviewHTML = (review) => {
   li.appendChild(comments);
 
   return li;
+}
+
+/**
+ * Returns the rating as stars
+ */
+getReviewStars = (stars) => {
+  if (stars > 5) stars = 5;
+  if (stars < 1) stars = 1;
+  let starsHTML = ``;
+  for (let i = 0; i < stars; i++) {
+    starsHTML += `&#9733;`;
+  }
+  return starsHTML;
 }
 
 /**

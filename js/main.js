@@ -140,7 +140,7 @@ createRestaurantHTML = (restaurant, index) => {
   
   const imageLink = document.createElement('a');
   imageLink.href = DBHelper.urlForRestaurant(restaurant);
-  imageLink.setAttribute("tab-index", "-1");
+  imageLink.setAttribute("tabindex", "-1");
   li.append(imageLink);
   
   const image = document.createElement('img');
