@@ -62,6 +62,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
 	const address = document.getElementById('restaurant-address');
 	address.innerHTML = restaurant.address;
+	address.setAttribute('tabindex', '0');
 
 	const largeImageSource = document.getElementById('restaurant-large-source');
 	largeImageSource.setAttribute('srcset', DBHelper.largeImageUrlForRestaurant(restaurant));
@@ -73,6 +74,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
 	const cuisine = document.getElementById('restaurant-cuisine');
 	cuisine.innerHTML = restaurant.cuisine_type;
+	cuisine.setAttribute('tabindex', '0');
 
 	// fill operating hours
 	if (restaurant.operating_hours) {
@@ -91,10 +93,12 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 	const rowHeader = document.createElement('tr');
 	const dayHeader = document.createElement('th');
 	dayHeader.innerHTML = 'Day of week';
+	dayHeader.setAttribute('tabindex', '0');
 	rowHeader.appendChild(dayHeader);
 
 	const timeHeader = document.createElement('th');
 	timeHeader.innerHTML = 'Open and close hours';
+	timeHeader.setAttribute('tabindex', '0');
 	rowHeader.appendChild(timeHeader);
 
 	tableHeader.appendChild(rowHeader);
@@ -107,10 +111,12 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 
 		const day = document.createElement('td');
 		day.innerHTML = key;
+		day.setAttribute('tabindex', '0');
 		row.appendChild(day);
 
 		const time = document.createElement('td');
 		time.innerHTML = operatingHours[key];
+		time.setAttribute('tabindex', '0');
 		row.appendChild(time);
 
 		tableBody.appendChild(row);
@@ -123,7 +129,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  */
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 	const container = document.getElementById('reviews-container');
-	const title = document.createElement('h2');
+	const title = document.createElement('h3');
 	title.innerHTML = 'Reviews';
 	container.appendChild(title);
 
@@ -191,9 +197,11 @@ getReviewStars = (stars) => {
  * Add restaurant name to the breadcrumb navigation menu
  */
 fillBreadcrumb = (restaurant=self.restaurant) => {
-	const breadcrumb = document.getElementById('breadcrumb');
+	const breadcrumbNav = document.getElementById('breadcrumb');
+	const breadcrumb = breadcrumbNav.querySelector('ol');
 	const li = document.createElement('li');
 	li.innerHTML = restaurant.name;
+	li.setAttribute('aria-current', 'page');
 	breadcrumb.appendChild(li);
 };
 

@@ -22,9 +22,11 @@
 				</a>
 				<h1><a href="/" tabindex="-1">Restaurant Reviews</a></h1>
 			</nav>
-			<ul id="breadcrumb">
-				<li><a href="/">Home</a></li>
-			</ul>
+			<nav aria-label="Breadcrumb" id="breadcrumb">
+				<ol role="breadcrumb">
+					<li><a href="/">Home</a></li>
+				</ol>
+			</nav>
 		</header>
 
 		<!-- Beginning main -->
@@ -45,7 +47,7 @@
 				</div>
 			</div>
 			<div id="map-container">
-				<div id="map"></div>
+				<div id="map" role="application" aria-label="Map"></div>
 			</div>
 		</main>
 		<!-- End main -->

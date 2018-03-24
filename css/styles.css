@@ -198,6 +198,11 @@ nav h1 a {
 	font-size: 17px;
 	margin: 0;
 	border-top: solid 3px #ccc;
+	display: block;
+}
+
+#breadcrumb ol {
+	margin: 0;
 }
 
 /* Display list items side by side */

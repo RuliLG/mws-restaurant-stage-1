@@ -1,4 +1,4 @@
-var staticCacheName = 'restaurant-reviews-v4';
+var staticCacheName = 'restaurant-reviews-v5';
 var contentImgsCache = 'restaurant-reviews-imgs-v2';
 var allCaches = [
 	staticCacheName,
@@ -11,9 +11,39 @@ self.addEventListener('install', function(event) {
 			return cache.addAll([
 				'/',
 				'js/main.js',
+				'js/dbhelper.js',
 				'js/restaurant_info.js',
-				'css/styles.css'
-			]);
+				'js/picturefill.js',
+				'sw-controller.js',
+				'css/styles.css',
+				'data/restaurants.json'
+			]).then(function() {
+				return caches.open(contentImgsCache).then(function(imgCache) {
+					return imgCache.addAll([
+						'img/1.jpg',
+						'img/1_large.jpg',
+						'img/2.jpg',
+						'img/2_large.jpg',
+						'img/3.jpg',
+						'img/3_large.jpg',
+						'img/4.jpg',
+						'img/4_large.jpg',
+						'img/5.jpg',
+						'img/5_large.jpg',
+						'img/6.jpg',
+						'img/6_large.jpg',
+						'img/7.jpg',
+						'img/7_large.jpg',
+						'img/8.jpg',
+						'img/8_large.jpg',
+						'img/9.jpg',
+						'img/9_large.jpg',
+						'img/10.jpg',
+						'img/10_large.jpg',
+						'img/logo.svg'
+					]);
+				});
+			});
 		})
 	);
 });
