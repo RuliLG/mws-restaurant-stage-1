@@ -1,21 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
 		<link rel="stylesheet" href="css/styles.css">
 		<title>Restaurant Reviews</title>
+
+		<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+		<link rel="shortcut icon" href="/icons/favicon.ico">
 	</head>
 
 	<body class="inside">
+		<a href="#maincontent" id="skip-content" data-focus="restaurant-name">Skip to main content</a>
 		<header>
 			<nav>
 				<a href="/">
 					<img src="img/logo.svg" alt="Restaurant Reviews">
 				</a>
-				<h1><a href="/">Restaurant Reviews</a></h1>
+				<h1><a href="/" tabindex="-1">Restaurant Reviews</a></h1>
 			</nav>
 			<ul id="breadcrumb">
 				<li><a href="/">Home</a></li>
@@ -23,36 +28,42 @@
 		</header>
 
 		<!-- Beginning main -->
-		<main id="maincontent">
-			<section id="restaurant-info">
+		<main id="maincontent" tabindex="-1">
+			<div id="restaurant-info">
 				<section id="restaurant-container">
-					<h1 id="restaurant-name"></h1>
-					<img id="restaurant-img">
+					<h2 id="restaurant-name" tabindex="-1">Restaurant Name</h2>
+					<picture>
+						<source id="restaurant-large-source" media="(min-width: 600px)">
+						<img id="restaurant-img" alt="">
+					</picture>
 					<p id="restaurant-cuisine"></p>
 					<p id="restaurant-address"></p>
 					<table id="restaurant-hours"></table>
 				</section>
-				<section id="reviews-container">
+				<div id="reviews-container">
 					<ul id="reviews-list"></ul>
-				</section>
-			</section>
-			<section id="map-container">
+				</div>
+			</div>
+			<div id="map-container">
 				<div id="map"></div>
-			</section>
+			</div>
 		</main>
 		<!-- End main -->
 
 		<!-- Beginning footer -->
 		<footer id="footer">
-			<a href="/"><img src="img/logo.svg" alt="Restaurant Reviews"></a> Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.<br> Made with &#10084; by <a href="https://raullg.com" target="_blank" rel="noopener">Raúl López</a>
+			<a href="/"><img src="img/logo.svg" alt="Restaurant Reviews"></a> Copyright (c) 2017 <a href="/" tabindex="-1"><strong>Restaurant Reviews</strong></a> All Rights Reserved.<br> Made with &#10084; by <a href="https://raullg.com" target="_blank" rel="noopener">Raúl López</a>
 		</footer>
 		<!-- End footer -->
 
 		<!-- Beginning scripts -->
+		<!-- Picturefill -->
+		<script src="js/picturefill.min.js"	></script>
 		<!-- Database helpers -->
-		<script type="text/javascript" src="js/dbhelper.js"></script>
+		<script src="js/dbhelper.js"></script>
 		<!-- Main javascript file -->
-		<script type="text/javascript" src="js/restaurant_info.js"></script>
+		<script src="js/restaurant_info.js"></script>
+		<script src="js/sw-controller.js"></script>
 		<!-- Google Maps -->
 		<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAq5sOCHLOJQd0XEKRYM3Trl3FRBp_LthQ&libraries=places&callback=initMap"></script>
 		<!-- End scripts -->
