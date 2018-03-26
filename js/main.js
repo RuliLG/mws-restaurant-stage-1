@@ -149,7 +149,12 @@ createRestaurantHTML = (restaurant, index) => {
 	const image = document.createElement('img');
 	image.className = 'restaurant-img';
 	image.src = DBHelper.imageUrlForRestaurant(restaurant);
-	image.setAttribute('alt', `${restaurant.cuisine_type} Restaurant: ${restaurant.name}`);
+	if (restaurant.photograph) {
+		image.setAttribute('alt', `${restaurant.cuisine_type} Restaurant: ${restaurant.name}`);
+	}
+	else {
+		image.setAttribute('alt', `Placeholder image for ${restaurant.name}, ${restaurant.cuisine_type} Restaurant`);
+	}
 	imageLink.append(image);
 
 	const contentWrapper = document.createElement('div');

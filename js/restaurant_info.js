@@ -69,7 +69,12 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
 	const image = document.getElementById('restaurant-img');
 	image.className = 'restaurant-img';
-	image.setAttribute('alt', `${restaurant.cuisine_type} Restaurant: ${restaurant.name}`);
+	if (restaurant.photograph) {
+		image.setAttribute('alt', `${restaurant.cuisine_type} Restaurant: ${restaurant.name}`);
+	}
+	else {
+		image.setAttribute('alt', `Placeholder image for ${restaurant.name}, ${restaurant.cuisine_type} Restaurant`);
+	}
 	image.src = DBHelper.imageUrlForRestaurant(restaurant);
 
 	const cuisine = document.getElementById('restaurant-cuisine');

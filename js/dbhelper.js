@@ -31,7 +31,6 @@ class DBHelper {
 	 */
 	static fetchRestaurantById(id, callback) {
 		DBHelper.fetchRestaurants(id).then((restaurant) => {
-			console.log(restaurant);
 				if (restaurant) { // Got the restaurant
 					callback(null, restaurant);
 				} else { // Restaurant does not exist in the database
