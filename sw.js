@@ -1,5 +1,5 @@
-var staticCacheName = 'restaurant-reviews-v5';
-var contentImgsCache = 'restaurant-reviews-imgs-v2';
+var staticCacheName = 'restaurant-reviews-v6';
+var contentImgsCache = 'restaurant-reviews-imgs-v3';
 var allCaches = [
 	staticCacheName,
 	contentImgsCache
@@ -50,6 +50,7 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('activate', function(event) {
+	alert();
 	event.waitUntil(
 		caches.keys().then(function(cacheNames) {
 			return Promise.all(
@@ -79,8 +80,6 @@ self.addEventListener('fetch', function(event) {
 		event.respondWith(fetch(event.request));
 		return;
 	}
-	
-	console.log(requestUrl.pathname);
 
 	event.respondWith(
 		caches.match(event.request).then(function(response) {
