@@ -12,12 +12,12 @@ self.addEventListener('install', function(event) {
 				'/',
 				'restaurant.html',
 				'js/main.js',
+				'js/idb.js',
+				'js/indexeddb.js',
 				'js/dbhelper.js',
 				'js/restaurant_info.js',
 				'js/picturefill.js',
-				'sw-controller.js',
-				'css/styles.css',
-				'data/restaurants.json'
+				'css/styles.css'
 			]).then(function() {
 				return caches.open(contentImgsCache).then(function(imgCache) {
 					return imgCache.addAll([
@@ -79,6 +79,8 @@ self.addEventListener('fetch', function(event) {
 		event.respondWith(fetch(event.request));
 		return;
 	}
+	
+	console.log(requestUrl.pathname);
 
 	event.respondWith(
 		caches.match(event.request).then(function(response) {

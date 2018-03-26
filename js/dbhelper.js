@@ -1,3 +1,7 @@
+let idbHelper = null;
+if (IDBHelper.hasIDB()) {
+	idbHelper = new IDBHelper('restaurants');
+}
 /**
  * Common database helper functions.
  */
@@ -22,7 +26,11 @@ class DBHelper {
 		}
 		return fetch(endpoint)
 			.then((data) => {
-				return data.json()
+				var json = data.json();
+				if (idbHelper) {
+					idbHelper.put('restaurants', {pairs: json});
+				}
+				return json;
 			});
 	}
 
