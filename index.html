@@ -3,13 +3,286 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="css/styles.css">
+		<meta name="author" content="Raúl López">
+		<meta name="theme-color" content="#31283C">
 		<title>Restaurant Reviews</title>
 
+		<link rel="manifest" href="/manifest.json">
 		<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
 		<link rel="shortcut icon" href="/icons/favicon.ico">
+
+		<style>
+			html,
+			body,
+			div,
+			article,
+			aside,
+			section,
+			main,
+			nav,
+			footer,
+			header,
+			form,
+			fieldset,
+			legend,
+			pre,
+			code,
+			p,
+			a,
+			h1,
+			h2,
+			h3,
+			h4,
+			h5,
+			h6,
+			ul,
+			ol,
+			li,
+			dl,
+			dt,
+			dd,
+			blockquote,
+			figcaption,
+			figure,
+			textarea,
+			input[type="email"],
+			input[type="number"],
+			input[type="password"],
+			input[type="tel"],
+			input[type="text"],
+			input[type="url"],
+			.border-box {
+				box-sizing: border-box;
+			}
+
+			body,
+			td,
+			th,
+			p {
+				font-family: Arial, Helvetica, sans-serif;
+				font-size: 14px;
+				color: #333;
+				line-height: 1.5;
+			}
+
+			body {
+				background-color: #fdfdfd;
+				margin: 0;
+				position: relative;
+			}
+
+			ul,
+			li {
+				font-family: Arial, Helvetica, sans-serif;
+				font-size: 14px;
+				color: #333;
+			}
+
+			a {
+				color: orange;
+				text-decoration: none;
+			}
+
+			a:hover,
+			a:focus {
+				color: #eaa63b;
+				text-decoration: underline;
+			}
+
+			a img {
+				border: none 0 #fff;
+			}
+
+			h1,
+			h2,
+			h3,
+			h4,
+			h5,
+			h6 {
+				font-family: Arial, Helvetica, sans-serif;
+				margin: 0 0 20px;
+			}
+
+			article,
+			aside,
+			canvas,
+			details,
+			figcaption,
+			figure,
+			footer,
+			header,
+			hgroup,
+			menu,
+			section {
+				display: block;
+			}
+
+			img,
+			object,
+			video,
+			embed {
+				max-width: 100%;
+			}
+
+			img{-webkit-transition: opacity 0.4s; -moz-transition: opacity 0.4s; -ms-transition: opacity 0.4s; -o-transition: opacity 0.4s; transition: opacity 0.4s; opacity: 1;}
+			img[data-src]{opacity: 0;}
+
+			#maincontent {
+				background-color: #f3f3f3;
+				min-height: 100%;
+			}
+
+			/* ====================== Navigation ====================== */
+
+			#skip-content {
+				position: absolute;
+				left: -9999px;
+				top: 0;
+				padding: 10px;
+				background-color: #e7a445;
+				color: #221e22;
+				font-size: 16px;
+			}
+
+			#skip-content:focus {
+				left: 0;
+			}
+
+			nav {
+				width: 100%;
+				background-color: #221e22;
+				display: -webkit-box;
+				display: -moz-box;
+				display: -ms-flexbox;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-align-items: center;
+				align-items: center;
+				-webkit-justify-content: center;
+				justify-content: center;
+				padding: 15px;
+			}
+
+			nav img {
+				height: 48px;
+			}
+
+			nav h1 {
+				margin: auto;
+			}
+
+			nav h1 a {
+				color: #fff;
+				font-size: 14px;
+				font-weight: 200;
+				letter-spacing: 2px;
+				text-transform: uppercase;
+				-webkit-transition: color 0.4s;
+				-moz-transition: color 0.4s;
+				-o-transition: color 0.4s;
+				-ms-transition: color 0.4s;
+				transition: color 0.4s;
+				will-change: color;
+				line-height: 48px;
+				display: block;
+			}
+
+			#breadcrumb {
+				padding: 10px 15px 16px;
+				list-style: none;
+				background-color: #221e22;
+				font-size: 17px;
+				margin: 0;
+				border-top: solid 3px #ccc;
+				display: block;
+			}
+
+			#breadcrumb ol {
+				margin: 0;
+			}
+
+			/* Display list items side by side */
+
+			#breadcrumb li {
+				display: inline;
+				color: #939393;
+			}
+
+			/* Add a slash symbol (/) before/behind each list item */
+
+			#breadcrumb li + li:before {
+				padding: 8px;
+				color: #ccc;
+				content: "/\00a0";
+			}
+
+			/* Add a color to all links inside the list */
+
+			#breadcrumb li a {
+				color: #eaa63b;
+				text-decoration: none;
+			}
+
+			/* Add a color on mouse-over */
+
+			#breadcrumb li a:hover {
+				color: #eaa63b;
+				text-decoration: underline;
+			}
+
+			/* ====================== Restaurant Filtering ====================== */
+
+			.filter-options {
+				width: 100%;
+				background-color: #31273d;
+				display: -webkit-box;
+				display: -moz-box;
+				display: -ms-flexbox;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-align-items: center;
+				align-items: center;
+				-webkit-justify-content: center;
+				justify-content: center;
+				-webkit-flex-direction: column;
+				-moz-flex-direction: column;
+				-ms-flex-direction: column;
+				-o-flex-direction: column;
+				flex-direction: column;
+				padding: 20px;
+			}
+
+			.filter-options h2 {
+				color: white;
+				font-size: 1rem;
+				font-weight: normal;
+				line-height: 1;
+				margin: 0 20px;
+			}
+
+			.filter-options select {
+				background-color: white;
+				border: 1px solid #fff;
+				font-family: Arial, sans-serif;
+				font-size: 11px;
+				height: 48px;
+				letter-spacing: 0;
+				margin: 15px;
+				padding: 0 10px;
+				width: 100%;
+			}
+
+			/* ====================== Map ====================== */
+
+			#map {
+				width: 100%;
+				height: 40vw;
+				min-height: 200px;
+				max-height: 400px;
+			}
+		</style>
 	</head>
 
 	<body>
@@ -46,10 +319,12 @@
 			<br>
 			Original icon downloaded from <a href="https://www.iconfinder.com/icons/2104705/eat_food_fork_knife_location_navigation_icon#size=128" target="_blank" rel="noopener">Icon Finder</a>
 		</footer>
-		
+
+		<link rel="stylesheet" href="css/styles.css">
 		<script src="js/idb.js"></script>
 		<script src="js/indexeddb.js"></script>
 		<script src="js/dbhelper.js"></script>
+		<script src="js/lazy-loader.js"></script>
 		<script src="js/main.js"></script>
 		<script src="js/sw-controller.js"></script>
 		<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAq5sOCHLOJQd0XEKRYM3Trl3FRBp_LthQ&libraries=places&callback=initMap"></script>
