@@ -1,4 +1,16 @@
+var idbHelper = null;
 class IDBHelper {
+	/**
+	 * Returns an instance of IDBHelper
+	 */
+	static getIDB() {
+		if (IDBHelper.hasIDB()) {
+			if (idbHelper === null) {
+				idbHelper = new IDBHelper('restaurants');
+			}
+		}
+		return idbHelper;
+	}
 	/**
 	 * Returns true if the navigator supports IndexedDB
 	 */
@@ -41,16 +53,12 @@ class IDBHelper {
 	/**
 	* Returns a promise with all the elements from store
 	* @param store: name of the store we want to insert an element
-	* @param index: index we want to search with
-	* @param query: [Optional] values of index we want to get from the idb
 	*/
-	getAll(store, index, query) {
+	getAll(store) {
 		return this.dbPromise.then(function(db) {
 			var tx = db.transaction(store);
-			var peopleStore = tx.objectStore(store);
-			var animalIndex = peopleStore.index(index);
-
-			return query ? animalIndex.getAll(query) : animalIndex.getAll();
+			var objectStore = tx.objectStore(store);
+			return objectStore.getAll();
 		});
 	}
 

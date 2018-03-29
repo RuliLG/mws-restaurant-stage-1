@@ -10,14 +10,29 @@ var markers = [];
  */
 document.addEventListener('DOMContentLoaded', (event) => {
 	shouldShowAriaSize = false;
+	showCachedRestaurants();
 	fetchNeighborhoods();
 	fetchCuisines();
 });
 
 /**
+ * Fetchs restaurants, neighbourhoods and cuisines from IDB and updates the HTML
+ */
+showCachedRestaurants = () => {
+	DBHelper.fetchRestaurants(null, true).then((restaurants) => {
+		// If they're already showing, do nothing
+		if (self.restaurants) return;
+		self.restaurants = restaurants;
+		fillRestaurantsHTML();
+	});
+	fetchNeighborhoods(true);
+	fetchCuisines(true);
+}
+
+/**
  * Fetch all neighborhoods and set their HTML.
  */
-fetchNeighborhoods = () => {
+fetchNeighborhoods = (useIDB = false) => {
 	DBHelper.fetchNeighborhoods((error, neighborhoods) => {
 		if (error) { // Got an error
 			console.error(error);
@@ -25,7 +40,7 @@ fetchNeighborhoods = () => {
 			self.neighborhoods = neighborhoods;
 			fillNeighborhoodsHTML();
 		}
-	});
+	}, useIDB);
 };
 
 /**
@@ -33,6 +48,11 @@ fetchNeighborhoods = () => {
  */
 fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
 	const select = document.getElementById('neighborhoods-select');
+	
+	const firstOption = select.querySelector('option');
+	select.innerHTML = '';
+	select.append(firstOption);
+	
 	neighborhoods.forEach(neighborhood => {
 		const option = document.createElement('option');
 		option.innerHTML = neighborhood;
@@ -44,7 +64,7 @@ fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
 /**
  * Fetch all cuisines and set their HTML.
  */
-fetchCuisines = () => {
+fetchCuisines = (useIDB = false) => {
 	DBHelper.fetchCuisines((error, cuisines) => {
 		if (error) { // Got an error!
 			console.error(error);
@@ -52,7 +72,7 @@ fetchCuisines = () => {
 			self.cuisines = cuisines;
 			fillCuisinesHTML();
 		}
-	});
+	}, useIDB);
 };
 
 /**
@@ -61,6 +81,10 @@ fetchCuisines = () => {
 fillCuisinesHTML = (cuisines = self.cuisines) => {
 	const select = document.getElementById('cuisines-select');
 
+	const firstOption = select.querySelector('option');
+	select.innerHTML = '';
+	select.append(firstOption);
+	
 	cuisines.forEach(cuisine => {
 		const option = document.createElement('option');
 		option.innerHTML = cuisine;
@@ -194,6 +218,7 @@ createRestaurantHTML = (restaurant, index) => {
  * Add markers for current restaurants to the map.
  */
 addMarkersToMap = (restaurants = self.restaurants) => {
+	if (typeof google === 'undefined') return;
 	restaurants.forEach(restaurant => {
 		// Add marker to the map
 		const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);

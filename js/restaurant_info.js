@@ -1,5 +1,38 @@
-let restaurant;
+let restaurant, cacheShown = false;
 var map;
+
+/**
+ * Get a parameter by name from page URL.
+ */
+getParameterByName = (name, url) => {
+	if (!url)
+		url = window.location.href;
+	name = name.replace(/[\[\]]/g, '\\$&');
+	const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`),
+		  results = regex.exec(url);
+	if (!results)
+		return null;
+	if (!results[2])
+		return '';
+	return decodeURIComponent(results[2].replace(/\+/g, ' '));
+};
+
+/**
+ * Fetchs restaurant from IDB and updates the HTML
+ */
+showCachedRestaurants = () => {
+	const id = getParameterByName('id');
+	DBHelper.fetchRestaurants(id, true).then((restaurant) => {
+		// If they're already showing, do nothing
+		if (self.restaurant) return;
+		changePageTitle(restaurant);
+		fillBreadcrumb(restaurant);
+		fillRestaurantHTML(restaurant);
+		cacheShown = true;
+	});
+}
+
+showCachedRestaurants();
 
 /**
  * Initialize Google map, called from HTML.
@@ -83,10 +116,10 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
 	// fill operating hours
 	if (restaurant.operating_hours) {
-		fillRestaurantHoursHTML();
+		fillRestaurantHoursHTML(restaurant.operating_hours);
 	}
 	// fill reviews
-	fillReviewsHTML();
+	fillReviewsHTML(restaurant.reviews);
 };
 
 /**
@@ -94,6 +127,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
  */
 fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
 	const hours = document.getElementById('restaurant-hours');
+	hours.innerHTML = '';
 	const tableHeader = document.createElement('thead');
 	const rowHeader = document.createElement('tr');
 	const dayHeader = document.createElement('th');
@@ -134,9 +168,11 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  */
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 	const container = document.getElementById('reviews-container');
-	const title = document.createElement('h3');
-	title.innerHTML = 'Reviews';
-	container.appendChild(title);
+	if (!cacheShown) {
+		const title = document.createElement('h3');
+		title.innerHTML = 'Reviews';
+		container.appendChild(title);
+	}
 
 	if (!reviews) {
 		const noReviews = document.createElement('p');
@@ -145,6 +181,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 		return;
 	}
 	const ul = document.getElementById('reviews-list');
+	ul.innerHTML = '';
 	reviews.forEach(review => {
 		ul.appendChild(createReviewHTML(review));
 	});
@@ -204,26 +241,13 @@ getReviewStars = (stars) => {
 fillBreadcrumb = (restaurant=self.restaurant) => {
 	const breadcrumbNav = document.getElementById('breadcrumb');
 	const breadcrumb = breadcrumbNav.querySelector('ol');
+	if (cacheShown) {
+		breadcrumb.querySelector('[aria-current]').remove();
+	}
 	const li = document.createElement('li');
 	li.innerHTML = restaurant.name;
 	li.setAttribute('aria-current', 'page');
 	breadcrumb.appendChild(li);
-};
-
-/**
- * Get a parameter by name from page URL.
- */
-getParameterByName = (name, url) => {
-	if (!url)
-		url = window.location.href;
-	name = name.replace(/[\[\]]/g, '\\$&');
-	const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`),
-		  results = regex.exec(url);
-	if (!results)
-		return null;
-	if (!results[2])
-		return '';
-	return decodeURIComponent(results[2].replace(/\+/g, ' '));
 };
 
 document.getElementById('skip-content').addEventListener('click', function(event) {
