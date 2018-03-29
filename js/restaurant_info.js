@@ -24,7 +24,7 @@ showCachedRestaurants = () => {
 	const id = getParameterByName('id');
 	DBHelper.fetchRestaurants(id, true).then((restaurant) => {
 		// If they're already showing, do nothing
-		if (self.restaurant) return;
+		if (self.restaurant || !restaurant) return;
 		changePageTitle(restaurant);
 		fillBreadcrumb(restaurant);
 		fillRestaurantHTML(restaurant);
@@ -99,6 +99,12 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
 	const largeImageSource = document.getElementById('restaurant-large-source');
 	largeImageSource.setAttribute('srcset', DBHelper.largeImageUrlForRestaurant(restaurant));
+	
+	const imageWebp = document.getElementById('restaurant-webp');
+	imageWebp.setAttribute('srcset', DBHelper.webpImageUrlForRestaurant(restaurant));
+	
+	const largeImageWebp = document.getElementById('restaurant-large-source-webp');
+	largeImageWebp.setAttribute('srcset', DBHelper.webpLargeImageUrlForRestaurant(restaurant));
 
 	const image = document.getElementById('restaurant-img');
 	image.className = 'restaurant-img';

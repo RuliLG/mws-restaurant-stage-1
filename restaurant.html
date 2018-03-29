@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="css/styles.css">
+		<meta name="author" content="Raúl López">
+		<meta name="theme-color" content="#31283C">
 		<title>Restaurant Reviews</title>
 
+		<link rel="manifest" href="/manifest.json">
 		<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
 		<link rel="shortcut icon" href="/icons/favicon.ico">
+
+		<style>
+			body,li,p,td,th,ul{font-size:14px;color:#333;font-family:Arial,Helvetica,sans-serif}body,h1,h2,h3,h4,h5,h6,li,p,td,th,ul{font-family:Arial,Helvetica,sans-serif}#breadcrumb,nav{background-color:#221e22}#breadcrumb,article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav h1 a,section{display:block}#breadcrumb ol,body{margin:0}#breadcrumb li a,a{text-decoration:none}.border-box,a,article,aside,blockquote,body,code,dd,div,dl,dt,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6,header,html,input[type=email],input[type=number],input[type=password],input[type=tel],input[type=text],input[type=url],legend,li,main,nav,ol,p,pre,section,textarea,ul{box-sizing:border-box}body,p,td,th{line-height:1.5}body{background-color:#fdfdfd;position:relative}a{color:orange}#breadcrumb li a:hover,a:focus,a:hover{color:#eaa63b;text-decoration:underline}a img{border:0 #fff}h1,h2,h3,h4,h5,h6{margin:0 0 20px}embed,img,object,video{max-width:100%}img{-webkit-transition:opacity .4s;-moz-transition:opacity .4s;-ms-transition:opacity .4s;-o-transition:opacity .4s;transition:opacity .4s;opacity:1}img[data-src]{opacity:0}#maincontent{background-color:#f3f3f3;min-height:100%}#skip-content{position:absolute;left:-9999px;top:0;padding:10px;background-color:#e7a445;color:#221e22;font-size:16px}#skip-content:focus{left:0}nav{width:100%;display:-webkit-box;display:-moz-box;display:-ms-flexbox;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;padding:15px}nav img{height:48px}nav h1{margin:auto}nav h1 a{color:#fff;font-size:14px;font-weight:200;letter-spacing:2px;text-transform:uppercase;-webkit-transition:color .4s;-moz-transition:color .4s;-o-transition:color .4s;-ms-transition:color .4s;transition:color .4s;will-change:color;line-height:48px}#breadcrumb{padding:10px 15px 16px;list-style:none;font-size:17px;margin:0;border-top:solid 3px #ccc}#breadcrumb li{display:inline;color:#939393}#breadcrumb li+li:before{padding:8px;color:#ccc;content:"/\00a0"}#breadcrumb li a{color:#eaa63b}.filter-options{width:100%;background-color:#31273d;display:-webkit-box;display:-moz-box;display:-ms-flexbox;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;-webkit-flex-direction:column;-moz-flex-direction:column;-ms-flex-direction:column;-o-flex-direction:column;flex-direction:column;padding:20px}.filter-options h2{color:#fff;font-size:1rem;font-weight:400;line-height:1;margin:0 20px}.filter-options select{background-color:#fff;border:1px solid #fff;font-family:Arial,sans-serif;font-size:11px;height:48px;letter-spacing:0;margin:15px;padding:0 10px;width:100%}#map{width:100%;height:40vw;min-height:200px;max-height:400px}
+		</style>
 	</head>
 
 	<body class="inside">
@@ -35,7 +40,9 @@
 				<section id="restaurant-container">
 					<h2 id="restaurant-name" tabindex="-1">Restaurant Name</h2>
 					<picture>
-						<source id="restaurant-large-source" media="(min-width: 600px)">
+						<source id="restaurant-webp" type="image/webp">
+						<source id="restaurant-large-source-webp" media="(min-width: 600px)" type="image/webp">
+						<source id="restaurant-large-source" media="(min-width: 600px)" type="image/jpg">
 						<img id="restaurant-img" alt="">
 					</picture>
 					<p id="restaurant-cuisine"></p>
@@ -60,7 +67,7 @@
 		</footer>
 		<!-- End footer -->
 
-		<!-- Beginning scripts -->
+		<link rel="stylesheet" href="css/styles.css">
 		<script src="js/idb.js"></script>
 		<script src="js/indexeddb.js"></script>
 		<!-- Picturefill -->

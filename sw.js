@@ -1,5 +1,5 @@
-var staticCacheName = 'restaurant-reviews-v7';
-var contentImgsCache = 'restaurant-reviews-imgs-v4';
+var staticCacheName = 'restaurant-reviews-v8';
+var contentImgsCache = 'restaurant-reviews-imgs-v5';
 var allCaches = [
     staticCacheName,
     contentImgsCache
@@ -41,6 +41,30 @@ self.addEventListener('install', function (event) {
                         'img/9_large.jpg',
                         'img/10.jpg',
                         'img/10_large.jpg',
+                        'img/default.jpg',
+                        'img/default_large.jpg',
+                        'img/webp/1.webp',
+                        'img/webp/1_large.webp',
+                        'img/webp/2.webp',
+                        'img/webp/2_large.webp',
+                        'img/webp/3.webp',
+                        'img/webp/3_large.webp',
+                        'img/webp/4.webp',
+                        'img/webp/4_large.webp',
+                        'img/webp/5.webp',
+                        'img/webp/5_large.webp',
+                        'img/webp/6.webp',
+                        'img/webp/6_large.webp',
+                        'img/webp/7.webp',
+                        'img/webp/7_large.webp',
+                        'img/webp/8.webp',
+                        'img/webp/8_large.webp',
+                        'img/webp/9.webp',
+                        'img/webp/9_large.webp',
+                        'img/webp/10.webp',
+                        'img/webp/10_large.webp',
+                        'img/webp/default.webp',
+                        'img/webp/default_large.webp',
                         'img/logo.svg'
                     ]);
                 });

@@ -164,22 +164,32 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
  */
 createRestaurantHTML = (restaurant, index) => {
 	const li = document.createElement('li');
-
+	li.setAttribute('tabindex', '0');
+	li.setAttribute('aria-label', `${restaurant.cuisine_type} Restaurant: ${restaurant.name}`);
+	
 	const imageLink = document.createElement('a');
 	imageLink.href = DBHelper.urlForRestaurant(restaurant);
 	imageLink.setAttribute("tabindex", "-1");
 	li.append(imageLink);
-
+	
+	const picture = document.createElement('picture');
+	const sourceWebp = document.createElement('source');
+	sourceWebp.setAttribute('type', 'image/webp');
+	sourceWebp.setAttribute('srcset', DBHelper.webpImageUrlForRestaurant(restaurant));
 	const image = document.createElement('img');
 	image.className = 'restaurant-img';
-	image.setAttribute('data-src', DBHelper.imageUrlForRestaurant(restaurant));
+	image.src = DBHelper.imageUrlForRestaurant(restaurant);
+	
+	picture.appendChild(sourceWebp);
+	picture.appendChild(image);
+	
 	if (restaurant.photograph) {
 		image.setAttribute('alt', `${restaurant.cuisine_type} Restaurant: ${restaurant.name}`);
 	}
 	else {
 		image.setAttribute('alt', `Placeholder image for ${restaurant.name}, ${restaurant.cuisine_type} Restaurant`);
 	}
-	imageLink.append(image);
+	imageLink.append(picture);
 
 	const contentWrapper = document.createElement('div');
 	contentWrapper.classList.add("content");
@@ -206,8 +216,8 @@ createRestaurantHTML = (restaurant, index) => {
 	more.setAttribute('aria-label', `View details about ${restaurant.name} restaurant`)
 	more.href = DBHelper.urlForRestaurant(restaurant);
 	if (shouldShowAriaSize) {
-		more.setAttribute('aria-setsize', self.restaurants.length);
-		more.setAttribute('aria-posinset', index+1);
+		li.setAttribute('aria-setsize', self.restaurants.length);
+		li.setAttribute('aria-posinset', index+1);
 	}
 	contentWrapper.append(more);
 
