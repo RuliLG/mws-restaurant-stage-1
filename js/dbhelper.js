@@ -33,6 +33,7 @@ class DBHelper {
 		return fetch(endpoint)
 			.then((data) => {
 				var json = data.json();
+				var idbHelper = IDBHelper.getIDB();
 				if (idbHelper) {
 					idbHelper.put('restaurants', {pairs: json});
 				}
