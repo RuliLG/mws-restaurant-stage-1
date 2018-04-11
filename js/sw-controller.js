@@ -13,4 +13,4 @@ class Controller {
 	}
 }
 
-new Controller();
+//new Controller();

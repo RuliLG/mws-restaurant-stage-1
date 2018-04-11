@@ -9,7 +9,7 @@ getParameterByName = (name, url) => {
 		url = window.location.href;
 	name = name.replace(/[\[\]]/g, '\\$&');
 	const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`),
-		  results = regex.exec(url);
+		results = regex.exec(url);
 	if (!results)
 		return null;
 	if (!results[2])
@@ -99,10 +99,10 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
 	const largeImageSource = document.getElementById('restaurant-large-source');
 	largeImageSource.setAttribute('srcset', DBHelper.largeImageUrlForRestaurant(restaurant));
-	
+
 	const imageWebp = document.getElementById('restaurant-webp');
 	imageWebp.setAttribute('srcset', DBHelper.webpImageUrlForRestaurant(restaurant));
-	
+
 	const largeImageWebp = document.getElementById('restaurant-large-source-webp');
 	largeImageWebp.setAttribute('srcset', DBHelper.webpLargeImageUrlForRestaurant(restaurant));
 
@@ -110,8 +110,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 	image.className = 'restaurant-img';
 	if (restaurant.photograph) {
 		image.setAttribute('alt', `${restaurant.cuisine_type} Restaurant: ${restaurant.name}`);
-	}
-	else {
+	} else {
 		image.setAttribute('alt', `Placeholder image for ${restaurant.name}, ${restaurant.cuisine_type} Restaurant`);
 	}
 	image.src = DBHelper.imageUrlForRestaurant(restaurant);
@@ -125,7 +124,11 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 		fillRestaurantHoursHTML(restaurant.operating_hours);
 	}
 	// fill reviews
-	fillReviewsHTML(restaurant.reviews);
+	DBHelper.fetchReviews(restaurant.id)
+		.then((reviews) => {
+			restaurant.reviews = reviews;
+			fillReviewsHTML(reviews);
+		});
 };
 
 /**
@@ -172,12 +175,41 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+fillReviewsHTML = (reviews) => {
 	const container = document.getElementById('reviews-container');
 	if (!cacheShown) {
 		const title = document.createElement('h3');
 		title.innerHTML = 'Reviews';
 		container.appendChild(title);
+	}
+
+	if (!document.getElementById('new-review')) {
+		const form = document.createElement('form');
+		form.id = 'new-review';
+		form.setAttribute('method', 'post');
+		form.setAttribute('action', 'restaurant.html');
+		form.addEventListener('submit', sendReview);
+
+		const label = document.createElement('label');
+		label.classList.add('label');
+		label.innerHTML = 'Want to say something?';
+		label.setAttribute('for', 'new-review-textarea');
+
+		const textarea = document.createElement('textarea');
+		textarea.id = 'new-review-textarea';
+		textarea.required = true;
+		textarea.setAttribute('rows', 4);
+		textarea.setAttribute('placeholder', 'Write your review here');
+		textarea.classList.add('form-control');
+
+		const submit = document.createElement('button');
+		submit.classList.add('btn');
+		submit.innerHTML = 'Submit review';
+
+		form.appendChild(label);
+		form.appendChild(textarea);
+		form.appendChild(submit);
+		container.appendChild(form);
 	}
 
 	if (!reviews) {
@@ -186,12 +218,12 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 		container.appendChild(noReviews);
 		return;
 	}
+
 	const ul = document.getElementById('reviews-list');
 	ul.innerHTML = '';
 	reviews.forEach(review => {
 		ul.appendChild(createReviewHTML(review));
 	});
-	container.appendChild(ul);
 };
 
 /**
@@ -213,8 +245,10 @@ createReviewHTML = (review) => {
 	name.innerHTML = `&#128113; ${review.name}`;
 	nameAndDateContainer.appendChild(name);
 
+	let parsedTime = new Date(review.updatedAt);
+	parsedTime = `${parsedTime.getMonth()+1}/${parsedTime.getDate()}/${parsedTime.getFullYear()}`;
 	const date = document.createElement('p');
-	date.innerHTML = `&#128467; ${review.date}`;
+	date.innerHTML = `&#128467; ${parsedTime}`;
 	nameAndDateContainer.appendChild(date);
 
 	const rating = document.createElement('p');
@@ -244,7 +278,7 @@ getReviewStars = (stars) => {
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
-fillBreadcrumb = (restaurant=self.restaurant) => {
+fillBreadcrumb = (restaurant = self.restaurant) => {
 	const breadcrumbNav = document.getElementById('breadcrumb');
 	const breadcrumb = breadcrumbNav.querySelector('ol');
 	if (cacheShown) {
@@ -256,7 +290,55 @@ fillBreadcrumb = (restaurant=self.restaurant) => {
 	breadcrumb.appendChild(li);
 };
 
-document.getElementById('skip-content').addEventListener('click', function(event) {
+/**
+ * Sends a review to the server
+ */
+sendReview = (event) => {
+	event.preventDefault();
+	let review = document.getElementById('new-review-textarea').value;
+	review = review.trim();
+
+	if (!review.length) {
+		alert('Please, fill the review');
+		return;
+	}
+
+	if (!navigator.onLine) {
+		// TODO: Save for later, man
+		alert('Oops! No connectivity!');
+		return;
+	}
+
+	// TODO: Add Name field and Stars selector
+	const params = {
+		restaurant_id: self.restaurant.id,
+		name: 'Raúl López',
+		rating: 5,
+		comments: review
+	};
+
+	fetch(`${DBHelper.DATABASE_URL}/reviews/`, {
+			body: JSON.stringify(params),
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			method: 'POST',
+			referrer: 'no-referrer'
+		})
+		.then((data) => {
+			return data.json();
+		})
+		.then((json) => {
+			self.restaurant.reviews.push(json);
+			fillReviewsHTML(self.restaurant.reviews);
+			document.getElementById('new-review-textarea').value = '';
+		})
+		.catch((error) => {
+			alert(error);
+		});
+};
+
+document.getElementById('skip-content').addEventListener('click', function (event) {
 	event.preventDefault();
 	var target = event.srcElement.getAttribute('data-focus');
 	document.getElementById(target).focus();

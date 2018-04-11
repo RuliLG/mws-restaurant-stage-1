@@ -135,6 +135,15 @@ class DBHelper {
 				callback(error, null);
 			});
 	}
+	
+	/**
+	 * Fetch a restaurant reviews
+	 */
+	static fetchReviews(restaurantID, callback) {
+		const endpoint = `${DBHelper.DATABASE_URL}/reviews?restaurant_id=${restaurantID}`;
+		return fetch(endpoint)
+		.then((data) => data.json());
+	}
 
 	/**
 	 * Restaurant page URL.
