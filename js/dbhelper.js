@@ -139,10 +139,94 @@ class DBHelper {
 	/**
 	 * Fetch a restaurant reviews
 	 */
-	static fetchReviews(restaurantID, callback) {
+	static fetchReviews(restaurantID, useIDB = false) {
 		const endpoint = `${DBHelper.DATABASE_URL}/reviews?restaurant_id=${restaurantID}`;
+		
+		// Use IDB if we are asked to
+		if (useIDB && IDBHelper.hasIDB()) {
+			var idbHelper = IDBHelper.getIDB();
+			return new Promise(function() {
+				return idbHelper.getAll('reviews').then((reviews) => {
+					return reviews.filter((review) => {
+						return review.restaurant_id == restaurantID;
+					});
+				});
+			});
+		}
+		
 		return fetch(endpoint)
-		.then((data) => data.json());
+		.then((data) => {
+			var json = data.json();
+			var idbHelper = IDBHelper.getIDB();
+			if (idbHelper) {
+				idbHelper.put('reviews', {pairs: json});
+			}
+			return json;
+		});
+	}
+	
+	static clickFavorite(button) {
+		var id = parseInt(button.getAttribute('data-restaurant'));
+		var is_favorite = button.getAttribute('aria-selected') === 'true';
+		fetch(`${DBHelper.DATABASE_URL}/restaurants/${id}/?is_favorite=${!is_favorite}`, {
+			method: 'PUT',
+		})
+		.then((data) => {
+			var json = data.json();
+			var idbHelper = IDBHelper.getIDB();
+			if (idbHelper) {
+				idbHelper.put('restaurants', {pairs: json});
+			}
+			return json;
+		})
+		.then((json) => {
+			var buttons = document.querySelectorAll(`[data-restaurant="${json.id}"]`);
+			for (const button of buttons) {
+				button.setAttribute('aria-selected', json.is_favorite);
+				button.setAttribute('aria-label', json.is_favorite ? `Unmark ${json.name} restaurant as favorite` : `Mark ${json.name} restaurant as favorite`);
+			}
+		})
+		.catch((error) => {
+			alert(error);
+		});
+	}
+	
+	static writeReview(params) {
+		return fetch(`${DBHelper.DATABASE_URL}/reviews/`, {
+			body: JSON.stringify(params),
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			method: 'POST',
+			referrer: 'no-referrer'
+		})
+		.then((data) => {
+			return data.json();
+		})
+		.catch((error) => {
+			alert(error);
+		});
+	}
+	
+	static checkOfflineReviews() {
+		return new Promise(function(resolve, reject) {
+			if (!navigator.onLine) {
+				resolve();
+				return;
+			}
+			var idbHelper = IDBHelper.getIDB();
+			var reviewsPromise = idbHelper.getAll('offline-reviews');
+
+			reviewsPromise.then((reviews) => {
+				for (const review of reviews) {
+					DBHelper.writeReview(review).then((json) => {
+						idbHelper.put('reviews', {value: json});
+					});
+				}
+				idbHelper.clear('offline-reviews');
+				resolve();
+			});
+		});
 	}
 
 	/**

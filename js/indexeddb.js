@@ -11,6 +11,7 @@ class IDBHelper {
 		}
 		return idbHelper;
 	}
+	
 	/**
 	 * Returns true if the navigator supports IndexedDB
 	 */
@@ -20,12 +21,16 @@ class IDBHelper {
 
 	constructor(name) {
 		this.name = name;
-		this.version = 1;
+		this.version = 3;
 		// Main configuration of the idb
 		this.dbPromise = idb.open(name, this.version, function(upgradeDb) {
 			switch(upgradeDb.oldVersion) {
 				case 0:
 					upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
+				case 1:
+					upgradeDb.createObjectStore('reviews', {keyPath: 'id'});
+				case 2:
+					upgradeDb.createObjectStore('offline-reviews', {keyPath: 'updatedAt'});
 			}
 		});
 	}
@@ -89,12 +94,25 @@ class IDBHelper {
 					return tx.complete;
 				});
 			}
-			else if (data.key && data.value) {
+			else if (data.value) {
 				var tx = db.transaction(store, 'readwrite');
 				var keyValStore = tx.objectStore(store);
-				keyValStore.put(data.value, data.key);
+				if (data.key) {
+					keyValStore.put(data.value);
+				}
+				else {
+					keyValStore.put(data.value, data.key);
+				}
 				return tx.complete;
 			}
+		});
+	}
+	
+	clear(store) {
+		return this.dbPromise.then(function(db) {
+			var tx = db.transaction(store, 'readwrite');
+			var keyValStore = tx.objectStore(store);
+			keyValStore.clear();
 		});
 	}
 }

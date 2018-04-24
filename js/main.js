@@ -11,6 +11,7 @@ var markers = [];
 document.addEventListener('DOMContentLoaded', (event) => {
 	shouldShowAriaSize = false;
 	showCachedRestaurants();
+	DBHelper.checkOfflineReviews();
 	fetchNeighborhoods();
 	fetchCuisines();
 });
@@ -51,13 +52,13 @@ fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
 	
 	const firstOption = select.querySelector('option');
 	select.innerHTML = '';
-	select.append(firstOption);
+	select.appendChild(firstOption);
 	
 	neighborhoods.forEach(neighborhood => {
 		const option = document.createElement('option');
 		option.innerHTML = neighborhood;
 		option.value = neighborhood;
-		select.append(option);
+		select.appendChild(option);
 	});
 };
 
@@ -83,13 +84,13 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
 
 	const firstOption = select.querySelector('option');
 	select.innerHTML = '';
-	select.append(firstOption);
+	select.appendChild(firstOption);
 	
 	cuisines.forEach(cuisine => {
 		const option = document.createElement('option');
 		option.innerHTML = cuisine;
 		option.value = cuisine;
-		select.append(option);
+		select.appendChild(option);
 	});
 };
 
@@ -154,7 +155,7 @@ resetRestaurants = (restaurants) => {
 fillRestaurantsHTML = (restaurants = self.restaurants) => {
 	const ul = document.getElementById('restaurants-list');
 	restaurants.forEach((restaurant, index) => {
-		ul.append(createRestaurantHTML(restaurant, index));
+		ul.appendChild(createRestaurantHTML(restaurant, index));
 	});
 	addMarkersToMap();
 };
@@ -167,10 +168,21 @@ createRestaurantHTML = (restaurant, index) => {
 	li.setAttribute('tabindex', '0');
 	li.setAttribute('aria-label', `${restaurant.cuisine_type} Restaurant: ${restaurant.name}`);
 	
+	const favoriteButton = document.createElement('button');
+	favoriteButton.classList.add('favorite');
+	favoriteButton.innerHTML = '&#10084;';
+	favoriteButton.setAttribute('aria-selected', restaurant.is_favorite);
+	favoriteButton.setAttribute('data-restaurant', restaurant.id);
+	favoriteButton.setAttribute('aria-label', restaurant.is_favorite ? `Unmark ${restaurant.name} restaurant as favorite` : `Mark ${restaurant.name} restaurant as favorite`)
+	favoriteButton.addEventListener('click', function() {
+		DBHelper.clickFavorite(this);
+	});
+	li.appendChild(favoriteButton);
+	
 	const imageLink = document.createElement('a');
 	imageLink.href = DBHelper.urlForRestaurant(restaurant);
 	imageLink.setAttribute("tabindex", "-1");
-	li.append(imageLink);
+	li.appendChild(imageLink);
 	
 	const picture = document.createElement('picture');
 	const sourceWebp = document.createElement('source');
@@ -189,23 +201,23 @@ createRestaurantHTML = (restaurant, index) => {
 	else {
 		image.setAttribute('alt', `Placeholder image for ${restaurant.name}, ${restaurant.cuisine_type} Restaurant`);
 	}
-	imageLink.append(picture);
+	imageLink.appendChild(picture);
 
 	const contentWrapper = document.createElement('div');
 	contentWrapper.classList.add("content");
-	li.append(contentWrapper);
+	li.appendChild(contentWrapper);
 
 	const name = document.createElement('h2');
 	name.innerHTML = restaurant.name;
-	contentWrapper.append(name);
+	contentWrapper.appendChild(name);
 
 	const neighborhood = document.createElement('p');
 	neighborhood.innerHTML = restaurant.neighborhood;
-	contentWrapper.append(neighborhood);
+	contentWrapper.appendChild(neighborhood);
 
 	const address = document.createElement('p');
 	address.innerHTML = restaurant.address;
-	contentWrapper.append(address);
+	contentWrapper.appendChild(address);
 
 	const more = document.createElement('a');
 	more.classList.add('btn');
@@ -219,7 +231,7 @@ createRestaurantHTML = (restaurant, index) => {
 		li.setAttribute('aria-setsize', self.restaurants.length);
 		li.setAttribute('aria-posinset', index+1);
 	}
-	contentWrapper.append(more);
+	contentWrapper.appendChild(more);
 
 	return li;
 };

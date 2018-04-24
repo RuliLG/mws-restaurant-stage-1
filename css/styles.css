@@ -38,6 +38,7 @@
 #restaurants-list li {
 	width: 100%;
 	margin: 15px 0;
+	position: relative;
 	background-color: #fff;
 	border: solid 1px #ddd;
 	display: -webkit-box;
@@ -98,6 +99,9 @@
 	margin: 0;
 	font-size: 11px;
 }
+
+.favorite{position: absolute; right: 0; top: 0; background: rgba(255,255,255,0.7); border: none; font-size: 32px; border-bottom-left-radius: 50%; color: #333; height: 48px; width: 48px;}
+.favorite[aria-selected="true"]{color: red;}
 
 .btn {
 	background-color: #a33100;
@@ -272,7 +276,7 @@
 .label{
 	display: block;
 	font-weight: 600;
-	margin-bottom: 10px;
+	margin: 10px 0;
 }
 .form-control{
 	width: 100%;
@@ -285,6 +289,9 @@
 #new-review .btn{
 	width: 100%;
 }
+
+.star{border: 0; background-color: transparent; font-size: 30px; color: #868686;}
+.star.active{color: #9E3319;}
 
 textarea{resize: vertical;}
 

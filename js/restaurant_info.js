@@ -1,6 +1,8 @@
 let restaurant, cacheShown = false;
 var map;
 
+// TODO: Offline Indicator
+
 /**
  * Get a parameter by name from page URL.
  */
@@ -28,7 +30,12 @@ showCachedRestaurants = () => {
 		changePageTitle(restaurant);
 		fillBreadcrumb(restaurant);
 		fillRestaurantHTML(restaurant);
-		cacheShown = true;
+		DBHelper.checkOfflineReviews().then(() => {
+			DBHelper.fetchReviews(restaurant.id, true).then((reviews) => {
+				fillReviewsHTML(reviews);
+				cacheShown = true;
+			});
+		});
 	});
 }
 
@@ -177,41 +184,11 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  */
 fillReviewsHTML = (reviews) => {
 	const container = document.getElementById('reviews-container');
-	if (!cacheShown) {
-		const title = document.createElement('h3');
-		title.innerHTML = 'Reviews';
-		container.appendChild(title);
-	}
-
-	if (!document.getElementById('new-review')) {
-		const form = document.createElement('form');
-		form.id = 'new-review';
-		form.setAttribute('method', 'post');
-		form.setAttribute('action', 'restaurant.html');
-		form.addEventListener('submit', sendReview);
-
-		const label = document.createElement('label');
-		label.classList.add('label');
-		label.innerHTML = 'Want to say something?';
-		label.setAttribute('for', 'new-review-textarea');
-
-		const textarea = document.createElement('textarea');
-		textarea.id = 'new-review-textarea';
-		textarea.required = true;
-		textarea.setAttribute('rows', 4);
-		textarea.setAttribute('placeholder', 'Write your review here');
-		textarea.classList.add('form-control');
-
-		const submit = document.createElement('button');
-		submit.classList.add('btn');
-		submit.innerHTML = 'Submit review';
-
-		form.appendChild(label);
-		form.appendChild(textarea);
-		form.appendChild(submit);
-		container.appendChild(form);
-	}
-
+	container.innerHTML = '';
+	const title = document.createElement('h3');
+	title.innerHTML = 'Reviews';
+	container.appendChild(title);
+	
 	if (!reviews) {
 		const noReviews = document.createElement('p');
 		noReviews.innerHTML = 'No reviews yet!';
@@ -219,11 +196,61 @@ fillReviewsHTML = (reviews) => {
 		return;
 	}
 
-	const ul = document.getElementById('reviews-list');
-	ul.innerHTML = '';
+	const ul = document.createElement('ul');
+	ul.id = 'reviews-list';
 	reviews.forEach(review => {
 		ul.appendChild(createReviewHTML(review));
 	});
+	container.appendChild(ul);
+
+	const form = document.createElement('form');
+	form.id = 'new-review';
+	form.setAttribute('method', 'post');
+	form.setAttribute('action', 'restaurant.html');
+	form.addEventListener('submit', sendReview);
+	
+	const nameLabel = document.createElement('label');
+	nameLabel.classList.add('label');
+	nameLabel.innerHTML = 'What\'s your name?';
+	nameLabel.setAttribute('for', 'new-review-name');
+	
+	const nameInput = document.createElement('input');
+	nameInput.id = 'new-review-name';
+	nameInput.classList.add('form-control');
+	nameInput.required = true;
+	nameInput.setAttribute('placeholder', 'John Doe');
+	nameInput.setAttribute('type', 'text');
+	
+	const starsLabel = document.createElement('label');
+	starsLabel.classList.add('label');
+	starsLabel.innerHTML = 'How would you score this restaurant?';
+	starsLabel.setAttribute('for', 'new-review-stars');
+
+	const messageLabel = document.createElement('label');
+	messageLabel.classList.add('label');
+	messageLabel.innerHTML = 'Want to say something?';
+	messageLabel.setAttribute('for', 'new-review-textarea');
+
+	const textarea = document.createElement('textarea');
+	textarea.id = 'new-review-textarea';
+	textarea.required = true;
+	textarea.setAttribute('rows', 4);
+	textarea.setAttribute('placeholder', 'Write your review here');
+	textarea.classList.add('form-control');
+
+	const submit = document.createElement('button');
+	submit.classList.add('btn');
+	submit.setAttribute('type', 'submit');
+	submit.innerHTML = 'Submit review';
+
+	form.appendChild(nameLabel);
+	form.appendChild(nameInput);
+	form.appendChild(starsLabel);
+	form.appendChild(createStarSelector());
+	form.appendChild(messageLabel);
+	form.appendChild(textarea);
+	form.appendChild(submit);
+	container.appendChild(form);
 };
 
 /**
@@ -281,9 +308,7 @@ getReviewStars = (stars) => {
 fillBreadcrumb = (restaurant = self.restaurant) => {
 	const breadcrumbNav = document.getElementById('breadcrumb');
 	const breadcrumb = breadcrumbNav.querySelector('ol');
-	if (cacheShown) {
-		breadcrumb.querySelector('[aria-current]').remove();
-	}
+	if (breadcrumb.querySelector('[aria-current]')) return;
 	const li = document.createElement('li');
 	li.innerHTML = restaurant.name;
 	li.setAttribute('aria-current', 'page');
@@ -302,40 +327,96 @@ sendReview = (event) => {
 		alert('Please, fill the review');
 		return;
 	}
+	
+	let name = document.getElementById('new-review-name').value;
+	name = name.trim();
 
-	if (!navigator.onLine) {
-		// TODO: Save for later, man
-		alert('Oops! No connectivity!');
+	if (!name.length) {
+		alert('Please, enter a valid name');
+		return;
+	}
+	
+	let reviewScore = document.getElementById('new-review-stars').value;
+	reviewScore = parseInt(reviewScore);
+	if (Number.isNaN(review) || reviewScore <= 0 || reviewScore > 5) {
+		alert('Please, enter a valid score');
 		return;
 	}
 
-	// TODO: Add Name field and Stars selector
 	const params = {
 		restaurant_id: self.restaurant.id,
-		name: 'Raúl López',
-		rating: 5,
-		comments: review
+		name: name,
+		rating: reviewScore,
+		comments: review,
+		updatedAt: Date.now()
 	};
 
-	fetch(`${DBHelper.DATABASE_URL}/reviews/`, {
-			body: JSON.stringify(params),
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			method: 'POST',
-			referrer: 'no-referrer'
-		})
-		.then((data) => {
-			return data.json();
-		})
+	if (!navigator.onLine) {
+		// TODO: Show alert
+		idbHelper.put('offline-reviews', {
+			value: params
+		});
+
+		self.restaurant.reviews.push(params);
+		fillReviewsHTML(self.restaurant.reviews);
+		document.getElementById('new-review-textarea').value = '';
+		return;
+	}
+	
+	
+
+	DBHelper.writeReview(params)
 		.then((json) => {
+			idbHelper.put('reviews', {
+				value: json
+			});
+		
 			self.restaurant.reviews.push(json);
 			fillReviewsHTML(self.restaurant.reviews);
 			document.getElementById('new-review-textarea').value = '';
-		})
-		.catch((error) => {
-			alert(error);
 		});
+};
+
+/**
+ * Creates a star selector with the id passed by parameter
+ */
+createStarSelector = (id = 'new-review-stars') => {
+	const input = document.createElement('input');
+	input.setAttribute('type', 'hidden');
+	input.setAttribute('aria-hidden', 'true');
+	input.id = id;
+	
+	const starWrapper = document.createElement('div');
+	starWrapper.classList.add('stars');
+	
+	starWrapper.appendChild(input);
+	for (let i = 1; i <= 5; i++) {
+		const star = document.createElement('button');
+		star.classList.add('star');
+		star.setAttribute('type', 'button');
+		star.setAttribute('data-value', i);
+		star.innerHTML = '&#9733;';
+		
+		star.addEventListener('click', _bindStar);
+		starWrapper.appendChild(star);
+	}
+	return starWrapper;
+};
+
+_bindStar = (e) => {
+	const starButton = e.srcElement;
+	const starWrapper = starButton.parentNode;
+	const stars = starWrapper.querySelectorAll('.star');
+	const value = parseInt(starButton.getAttribute('data-value'));
+	for (const star of stars) {
+		if (parseInt(star.getAttribute('data-value')) <= value) {
+			star.classList.add('active');
+		}
+		else {
+			star.classList.remove('active');
+		}
+	}
+	starWrapper.querySelector('input').value = value;
 };
 
 document.getElementById('skip-content').addEventListener('click', function (event) {
