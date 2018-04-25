@@ -17,6 +17,7 @@ self.addEventListener('install', function (event) {
                 'js/dbhelper.js',
                 'js/restaurant_info.js',
                 'js/picturefill.min.js',
+                'js/lazyload.min.js',
                 'css/styles.css'
             ]).then(function () {
                 return caches.open(contentImgsCache).then(function (imgCache) {

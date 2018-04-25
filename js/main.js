@@ -2,8 +2,20 @@ let restaurants,
 	neighborhoods,
 	cuisines,
 	shouldShowAriaSize;
+let myLazyLoad = new LazyLoad();
 var map;
 var markers = [];
+
+const mapDiv = document.getElementById('map');
+console.log(mapDiv);
+if (mapDiv) {
+	mapDiv.addEventListener('click', function(e) {
+		const script = document.createElement('script');
+		script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyAq5sOCHLOJQd0XEKRYM3Trl3FRBp_LthQ&libraries=places&callback=initMap";
+		document.body.appendChild(script);
+		mapDiv.setAttribute('aria-label', 'Map');
+	});
+}
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
@@ -158,6 +170,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 		ul.appendChild(createRestaurantHTML(restaurant, index));
 	});
 	addMarkersToMap();
+	myLazyLoad.update();
 };
 
 /**
@@ -170,6 +183,7 @@ createRestaurantHTML = (restaurant, index) => {
 	
 	const favoriteButton = document.createElement('button');
 	favoriteButton.classList.add('favorite');
+	favoriteButton.setAttribute('role', 'radio');
 	favoriteButton.innerHTML = '&#10084;';
 	favoriteButton.setAttribute('aria-selected', restaurant.is_favorite);
 	favoriteButton.setAttribute('data-restaurant', restaurant.id);
@@ -187,10 +201,10 @@ createRestaurantHTML = (restaurant, index) => {
 	const picture = document.createElement('picture');
 	const sourceWebp = document.createElement('source');
 	sourceWebp.setAttribute('type', 'image/webp');
-	sourceWebp.setAttribute('srcset', DBHelper.webpImageUrlForRestaurant(restaurant));
+	sourceWebp.setAttribute('data-srcset', DBHelper.webpImageUrlForRestaurant(restaurant));
 	const image = document.createElement('img');
 	image.className = 'restaurant-img';
-	image.src = DBHelper.imageUrlForRestaurant(restaurant);
+	image.setAttribute('data-src', DBHelper.imageUrlForRestaurant(restaurant));
 	
 	picture.appendChild(sourceWebp);
 	picture.appendChild(image);

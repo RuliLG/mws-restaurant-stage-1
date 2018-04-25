@@ -134,6 +134,9 @@
 	background-color: #44365A;
 }
 
+#map{background: #ccc url('../img/map.svg'); background-repeat: no-repeat; background-position: center; background-size: 128px auto;}
+#network-alert{position: fixed; bottom: 0; left: 0; width: 100%; z-index: 999; background-color: #221E22; color: #fff; text-align: center; padding: 15px;}
+
 /* ====================== Restaurant Details ====================== */
 
 .inside #maincontent {

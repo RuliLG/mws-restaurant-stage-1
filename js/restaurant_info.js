@@ -1,6 +1,16 @@
 let restaurant, cacheShown = false;
 var map;
 
+const mapDiv = document.getElementById('map');
+if (mapDiv) {
+	mapDiv.addEventListener('click', function(e) {
+		const script = document.createElement('script');
+		script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyAq5sOCHLOJQd0XEKRYM3Trl3FRBp_LthQ&libraries=places&callback=initMap";
+		document.body.appendChild(script);
+		mapDiv.setAttribute('aria-label', 'Map');
+	});
+}
+
 // TODO: Offline Indicator
 
 /**
@@ -40,7 +50,6 @@ showCachedRestaurants = () => {
 }
 
 showCachedRestaurants();
-
 /**
  * Initialize Google map, called from HTML.
  */
@@ -54,7 +63,6 @@ window.initMap = () => {
 				center: restaurant.latlng,
 				scrollwheel: false
 			});
-			fillBreadcrumb();
 			DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
 		}
 	});
@@ -85,6 +93,10 @@ fetchRestaurantFromURL = (callback) => {
 		});
 	}
 };
+
+fetchRestaurantFromURL((error, restaurant) => {
+	fillBreadcrumb();
+});
 
 /**
  * Changes the page title
@@ -280,6 +292,7 @@ createReviewHTML = (review) => {
 
 	const rating = document.createElement('p');
 	rating.innerHTML = `Rating: ${getReviewStars(review.rating)}`;
+	rating.setAttribute('aria-label', `Rating: ${review.rating} of 5`);
 	li.appendChild(rating);
 
 	const comments = document.createElement('p');
@@ -388,13 +401,17 @@ createStarSelector = (id = 'new-review-stars') => {
 	
 	const starWrapper = document.createElement('div');
 	starWrapper.classList.add('stars');
+	starWrapper.setAttribute('role', 'radiogroup')
 	
 	starWrapper.appendChild(input);
 	for (let i = 1; i <= 5; i++) {
 		const star = document.createElement('button');
 		star.classList.add('star');
 		star.setAttribute('type', 'button');
+		star.setAttribute('role', 'radio');
+		star.setAttribute('aria-label', `Rate with ${i} ${i === 1 ? 'star' : 'stars'}`);
 		star.setAttribute('data-value', i);
+		star.setAttribute('aria-selected', 'false');
 		star.innerHTML = '&#9733;';
 		
 		star.addEventListener('click', _bindStar);
@@ -415,7 +432,9 @@ _bindStar = (e) => {
 		else {
 			star.classList.remove('active');
 		}
+		star.setAttribute('aria-selected', 'false');
 	}
+	starButton.setAttribute('aria-selected', 'true');
 	starWrapper.querySelector('input').value = value;
 };
 
@@ -424,3 +443,27 @@ document.getElementById('skip-content').addEventListener('click', function (even
 	var target = event.srcElement.getAttribute('data-focus');
 	document.getElementById(target).focus();
 });
+
+updateOnlineStatus = () => {
+	let alert = document.getElementById('network-alert');
+	if (navigator.onLine) {
+		if (alert) {
+			alert.innerHTML = `You're connected again!`;
+			DBHelper.checkOfflineReviews();
+			setTimeout(function() {
+				if (navigator.onLine)
+					document.getElementById('network-alert').remove();
+			}, 1500);
+		}
+	}
+	else {
+		alert = document.createElement('div');
+		alert.id = 'network-alert';
+		alert.setAttribute('aria-live', 'polite');
+		alert.innerHTML = 'The connection was lost. You still can send a review and it will be sent later.';
+		document.body.appendChild(alert);
+	}
+};
+
+window.addEventListener('online',  updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
